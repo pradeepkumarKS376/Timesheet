@@ -11,26 +11,40 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import socket
+from dotenv import load_dotenv
+#import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+Template_DIR = os.path.join(BASE_DIR, r"template")
+STATIC_DIR = os.path.join(BASE_DIR, r"static")
+Env_DIR = os.path.join(BASE_DIR, r"Login.env")
+load_dotenv(Env_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ya0lggl6)w823^^ojo$%4jlw+jh2ek!uu*a$a2cb0-z-0o%yv*'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
+if socket.gethostname().endswith(
+    ".local"
+):  # True in your local computer =='AP-MBeaW5Ur0LNf':#
+    DEBUG = True
+    ALLOWED_HOSTS = ["*"]
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'TimeSheet',
+    "bootstrap5",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +68,7 @@ ROOT_URLCONF = 'BCTTimesheet.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [Template_DIR,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,8 +130,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [STATIC_DIR,]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+# EMAIL_HOST_USER = Gmail.Username
+# EMAIL_HOST_PASSWORD =  Gmail.Password
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+
+SECURE_BROWSER_XSS_FILTER = False
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+HOST_SCHEME = "http://"
+
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+#django_heroku.settings(locals())
+

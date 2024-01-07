@@ -14,9 +14,10 @@ from pathlib import Path
 import os
 import socket
 from dotenv import load_dotenv
-#import django_heroku
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+#import django_heroku
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 BASE_DIR = Path(__file__).resolve().parent.parent
 Template_DIR = os.path.join(BASE_DIR, r"template")
 STATIC_DIR = os.path.join(BASE_DIR, r"static")
@@ -44,7 +45,7 @@ else:
 
 INSTALLED_APPS = [
     'TimeSheet',
-    "bootstrap5",
+    'bootstrap5',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

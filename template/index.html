@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+                <div class="block-left">
+                    <form action="{% url 'inserttimesheet' %}" method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                        <table class="table table-responsive"  id = "mytable">
+                            <thead>
+                                <tr>
+                                    <th class="col-1 col-form-label">DATE</th>
+                                    <th class="col-1 col-form-label">CLIENT NO.</th>
+                                    <th class="col-1 col-form-label">CLIENT NAME</th>
+                                    <th class="col-1 col-form-label">TASK</th>
+                                    <th class="col-1 col-form-label">HOURS</th>
+                                <!--<th class="col-1 col-form-label">TOTAL HOURS/DAY</th>-->
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <td><input name="DATE" type='date' class="form-control" /></td>
+                                    <td><select class="custom-select form-control form-select" name ="Client_Id">
+                                        {% for n in client_details %}
+                                        <option value ="{{ n.Client_Id }}" name ="Client_Id">{{ n.Client_Id}} </option>
+                                        {% endfor %} </select></td>
+                                    <td><select class="custom-select form-control form-select"  name ="Client_Name">
+                                        {% for n in client_details %}
+                                        <option value ="{{ n.Client_Name }}" name ="Client_Name">{{ n.Client_Name }} </option>
+                                        {% endfor %}</select></td>
+                                    <td><select class="custom-select form-control form-select"  name ="Task_Name">
+                                        {% for n in client_details %}
+                                        <option value ="{{ n.Task_Name }}" name ="Task_Name">{{ n.Task_Name }} </option>
+                                        {% endfor %}</select></td>
+                                    <td><input name="HOURS" class="form-control"  type="text"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <div class="form-group clearfix">&nbsp;
+                             <div class="col-md-12 col-md-6">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                             </div>
+                        </div>
+                        <div class="form-group clearfix">&nbsp;
+                             <div class="col-md-12 col-md-6">
+                                 <div  class="table-responsive">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th class="col-1 col-form-label">DATE</th>
+                                    <th class="col-1 col-form-label">CLIENT NO.</th>
+                                    <th class="col-1 col-form-label">CLIENT NAME</th>
+                                    <th class="col-1 col-form-label">TASK</th>
+                                    <th class="col-1 col-form-label">HOURS</th>
+                                <!--<th class="col-1 col-form-label">TOTAL HOURS/DAY</th>-->
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                            {% for n in Empattendancdetails %}
+                                <tr>
+
+                                   <td>
+
+                                       {{ n.DATE }}
+
+                                   </td> <td>
+
+                                       {{ n.Client_Id }}
+
+                                   </td>
+                                    <td>
+
+                                       {{ n.Client_Name }}
+
+                                   </td>
+                                    <td>
+
+                                       {{ n.Task_Name }}
+
+                                   </td>
+                                    <td>
+
+                                       {{ n.HOURS }}
+
+                                   </td>
+                                </tr>{% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+
+                             </div>
+                        </div>
+                    </form>
+                </div>
+<script>
+    function row()
+    {
+        var mytable =  document.getElementById("mytable");
+        var rows = mytable.rows.length;
+        var r = mytable.insertRow(rows);
+        var c1 = r.insertCell(0);
+        var c2 = r.insertCell(1);
+        var c3 = r.insertCell(2);
+        var checkbox = document.createElement("input");
+        var roll = document.createElement("input");
+        var name = document.createElement("input");
+        checkbox.type = "Date";
+        roll.type = "select";
+        name.type = "text";
+        c1.appendChild(checkbox);
+        c2.appendChild(roll);
+        c3.appendChild(name);
+
+    }
+    function del()
+    {
+        var mytable = document.getElementById("mytable");
+        var rows = mytable.rows.length;
+        for(var i = rows - 1; i > 0; i--)
+        {
+            if(mytable.rows[i].cells[1].children[0].checked)
+            {
+                mytable.deleteRow(i);
+            }
+        }
+    }
+</script>
+{% endblock %}

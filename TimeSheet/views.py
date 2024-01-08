@@ -1,13 +1,14 @@
 import datetime
 
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 # Create your views here.
 from django.shortcuts import render, redirect
 from .models import *
 from .Forms import *
-
+from django.db.models import Sum
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -20,8 +21,10 @@ def login_view(request):
             week_start = datetime.date.today()
             week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
             week_end = week_start + datetime.timedelta(days=7)
+            Total_Hours = Empattendancemodule.objects.filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).aggregate(Total_Hours=Sum('HOURS'))
+            request.session['TotalHours'] = Total_Hours
             Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
-            response =  render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id})
+            response = render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id,"Total_Hours":Total_Hours })
             return response
         else:
             return render(request, 'login-2.html', {'error_message': 'Incorrect username and / or password.'})
@@ -76,6 +79,7 @@ def edit_view(request,id):
     return render(request, "Update.html",
                   {"Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id})
 
+
 def del_view(request,id):
     Emp_id = request.session['Employee_ID']
     Empattendancdetails = Empattendancemodule.objects.all().filter(id=id)
@@ -89,3 +93,7 @@ def del_view(request,id):
         'DATE')
     return render(request, "index.html",
                   {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id})
+
+
+def Totalhrs(request):
+    return render()

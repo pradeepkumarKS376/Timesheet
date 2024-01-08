@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="block-left">
+                    <form  action="{% url 'updates' Empattendancdetails.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                        <table class="table table-responsive"  id = "mytable">
+                            <thead>
+                                <tr>
+                                   <th class="col-1 col-form-label">
+                                        <label class="form-label">DATE</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">CLIENT NO.</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">CLIENT NAME</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">TASK</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">HOURS</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">Employee_id</label></th>
+                                <!--<th class="col-1 col-form-label">TOTAL HOURS/DAY</th>-->
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <td><input name="DATE" type='text' class="form-control"  value ="{{ Empattendancdetails.DATE|date:'Y-m-d' }}"/></td>
+                                    <td><input name="Client_Id" type='text' class="form-control"  value ="{{ Empattendancdetails.Client_Id }}" /></td>
+                                    <td><input name="Client_Name" type='text' class="form-control" value ="{{ Empattendancdetails.Client_Name }}" /></td>
+                                    <td><input name="Task_Name" type='text' class="form-control" value ="{{ Empattendancdetails.Task_Name }}" /></td>
+                                    <td><input name="HOURS" class="form-control"  type="text" value ="{{ Empattendancdetails.HOURS }}"></td>
+                                    <td><input name="Employee_id" class="form-control"  type="text" value ="{{ Empattendancdetails.Employee_id }}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <div class="form-group clearfix">&nbsp;
+                             <div class="col-md-12 col-md-6">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                             </div>
+                        </div>
+                    </form>
+    </div>
+{% endblock %}

@@ -10,3 +10,14 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = Loginmodule
         fields = "__all__"
+
+
+class EmpattendanceForm(forms.ModelForm):
+    class Meta:
+        model = Empattendancemodule
+        fields = "__all__"
+
+    # DATE = forms.DateField(
+    #     widget=forms.DateInput(format='%Y%m%d'),
+    #     input_formats=['%y%m%d']
+    # )

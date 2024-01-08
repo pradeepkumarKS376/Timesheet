@@ -17,7 +17,10 @@ def login_view(request):
             request.session['Employee_ID'] = Emp_id
             request.session.set_test_cookie()
             client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
-            Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE=datetime.date.today())
+            week_start = datetime.date.today()
+            week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
+            week_end = week_start + datetime.timedelta(days=7)
+            Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
             response =  render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id})
             return response
         else:
@@ -36,10 +39,12 @@ def logout_view(request):
 
 
 def inserttimesheet_view(request):
-
     Emp_id = request.session['Employee_ID']
     client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
-    Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE=datetime.date.today())
+    week_start = datetime.date.today()
+    week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
+    week_end = week_start + datetime.timedelta(days=7)
+    Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
     if request.method == 'POST':
         DATE = request.POST['DATE']
         Client_Id = request.POST['Client_Id']
@@ -58,14 +63,13 @@ def edit_view(request,id):
     Empattendancdetails = Empattendancemodule.objects.all().get(id=id)
     if request.method == 'POST':
         form = EmpattendanceForm(request.POST, instance=Empattendancdetails)
-        DATE = request.POST['DATE']
-        print(DATE)
-        print(form)
-        print(form.is_valid())
         if form.is_valid():
             form.save()
             client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
-            Empattendancdetail = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE=datetime.date.today())
+            week_start = datetime.date.today()
+            week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
+            week_end = week_start + datetime.timedelta(days=7)
+            Empattendancdetail = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
             return render(request, "index.html",{"client_details": client_details,"Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id})
         # else:
         #     print("ppp")
@@ -77,7 +81,11 @@ def del_view(request,id):
     Empattendancdetails = Empattendancemodule.objects.all().filter(id=id)
     Empattendancdetails.delete()
     client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
-    Empattendancdetail = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(
-        DATE=datetime.date.today())
+    week_start = datetime.date.today()
+    week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
+    week_end = week_start + datetime.timedelta(days=7)
+    Empattendancdetail = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,
+                                                                                              DATE__lte=week_end).order_by(
+        'DATE')
     return render(request, "index.html",
                   {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id})

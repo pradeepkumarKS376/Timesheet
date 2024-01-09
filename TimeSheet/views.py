@@ -18,18 +18,61 @@ def login_view(request):
             request.session['Employee_ID'] = Emp_id
             request.session.set_test_cookie()
             client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
-            week_start = datetime.date.today()
-            week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
-            week_end = week_start + datetime.timedelta(days=7)
-            Total_Hours = Empattendancemodule.objects.filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).aggregate(Total_Hours=Sum('HOURS'))
-            request.session['TotalHours'] = Total_Hours
-            Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
-            response = render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id,"Total_Hours":Total_Hours })
+            Totalhrs = Totalhr(Emp_id)
+            Empattendancdetails = Sort_week(Emp_id)
+            response = render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id,"Total_Hours":Totalhrs })
             return response
         else:
             return render(request, 'login-2.html', {'error_message': 'Incorrect username and / or password.'})
     else:
         return render(request, 'login-2.html')
+
+
+def inserttimesheet_view(request):
+    Emp_id = request.session['Employee_ID']
+    client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
+    Totalhrs = Totalhr(Emp_id)
+    Empattendancdetails = Sort_week(Emp_id)
+    if request.method == 'POST':
+        DATE = request.POST['DATE']
+        Client_Id = request.POST['Client_Id']
+        Client_Name = request.POST['Client_Name']
+        Task_Name = request.POST['Task_Name']
+        HOURS = request.POST['HOURS']
+        a = Empattendancemodule.objects.create(DATE=DATE,Client_Id=Client_Id,Client_Name=Client_Name,Task_Name=Task_Name,HOURS=HOURS,Employee_id=Emp_id)
+        a.save()
+        Totalhrs = Totalhr(Emp_id)
+        return render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id,"Total_Hours":Totalhrs})
+    else:
+        return render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id,"Total_Hours":Totalhrs})
+
+
+def edit_view(request,id):
+    Emp_id = request.session['Employee_ID']
+    Empattendancdetails = Empattendancemodule.objects.all().get(id=id)
+    if request.method == 'POST':
+        form = EmpattendanceForm(request.POST, instance=Empattendancdetails)
+        if form.is_valid():
+            form.save()
+            Totalhrs = Totalhr(Emp_id)
+            client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
+            Empattendancdetail = Sort_week(Emp_id)
+            return render(request, "index.html",{"client_details": client_details,"Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id,"Total_Hours":Totalhrs})
+        # else:
+        #     print("ppp")
+    return render(request, "Update.html",
+                  {"Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id})
+
+
+def del_view(request,id):
+    Emp_id = request.session['Employee_ID']
+    Empattendancdetails = Empattendancemodule.objects.all().filter(id=id)
+    Empattendancdetails.delete()
+    Totalhrs = Totalhr(Emp_id)
+    client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
+    Empattendancdetail = Sort_week(Emp_id)
+    return render(request, "index.html",
+                  {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id,"Total_Hours":Totalhrs})
 
 
 def logout_view(request):
@@ -41,59 +84,23 @@ def logout_view(request):
     return render(request,"Login-2.html")
 
 
-def inserttimesheet_view(request):
-    Emp_id = request.session['Employee_ID']
-    client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
+def Totalhr(Emp_id):
+
     week_start = datetime.date.today()
     week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
     week_end = week_start + datetime.timedelta(days=7)
-    Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
-    if request.method == 'POST':
-        DATE = request.POST['DATE']
-        Client_Id = request.POST['Client_Id']
-        Client_Name = request.POST['Client_Name']
-        Task_Name = request.POST['Task_Name']
-        HOURS = request.POST['HOURS']
-        a = Empattendancemodule.objects.create(DATE=DATE,Client_Id=Client_Id,Client_Name=Client_Name,Task_Name=Task_Name,HOURS=HOURS,Employee_id=Emp_id)
-        a.save()
-        return render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id})
-    else:
-        return render(request, "index.html", {"client_details": client_details,"Empattendancdetails":Empattendancdetails,"Emp_id":Emp_id})
+    Total_Hours = Empattendancemodule.objects.filter(Employee_id=Emp_id).filter(DATE__gte=week_start,
+                                                                                DATE__lte=week_end).aggregate(
+        Total_Hours=Sum('HOURS'))
+    Total_Hours = str(Total_Hours).split(":")[1].split("}")[0]
+    return Total_Hours
 
 
-def edit_view(request,id):
-    Emp_id = request.session['Employee_ID']
-    Empattendancdetails = Empattendancemodule.objects.all().get(id=id)
-    if request.method == 'POST':
-        form = EmpattendanceForm(request.POST, instance=Empattendancdetails)
-        if form.is_valid():
-            form.save()
-            client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
-            week_start = datetime.date.today()
-            week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
-            week_end = week_start + datetime.timedelta(days=7)
-            Empattendancdetail = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end).order_by('DATE')
-            return render(request, "index.html",{"client_details": client_details,"Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id})
-        # else:
-        #     print("ppp")
-    return render(request, "Update.html",
-                  {"Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id})
-
-
-def del_view(request,id):
-    Emp_id = request.session['Employee_ID']
-    Empattendancdetails = Empattendancemodule.objects.all().filter(id=id)
-    Empattendancdetails.delete()
-    client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
+def Sort_week(Emp_id):
     week_start = datetime.date.today()
     week_start -= datetime.timedelta(days=(week_start.weekday() + 1) % 7)
     week_end = week_start + datetime.timedelta(days=7)
     Empattendancdetail = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).filter(DATE__gte=week_start,
-                                                                                              DATE__lte=week_end).order_by(
+                                                                                             DATE__lte=week_end).order_by(
         'DATE')
-    return render(request, "index.html",
-                  {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id})
-
-
-def Totalhrs(request):
-    return render()
+    return Empattendancdetail

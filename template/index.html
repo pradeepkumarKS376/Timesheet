@@ -4,11 +4,11 @@
                     <form action="{% url 'inserttimesheet' %}" method="post">
                         {% csrf_token %}
                         <div class="table-responsive">
-                        <table class="table table-responsive"  id = "mytable">
+                        <table class="table table-responsive{-sm|-md|-lg|-xl|-xxl}"  id = "mytable">
                             <thead>
                                 <tr>
                                    <th class="col-1 col-form-label">
-                                        <label for="validationTooltip01" class="form-label">DATE</label></th>
+                                        <label for="validationTooltip02" class="form-label">DATE</label></th>
                                     <th class="col-1 col-form-label">
                                         <label class="form-label">CLIENT NO.</label></th>
                                     <th class="col-1 col-form-label">
@@ -22,7 +22,7 @@
                             </thead>
                             <tbody class="table-group-divider">
                                 <tr>
-                                    <td><input name="DATE" type='date' class="form-control"  id="validationTooltip01"required /></td>
+                                    <td><input name="DATE" type='date' class="form-control"  id="validationTooltip02"required /></td>
                                     <td><select class="custom-select form-control form-select" name ="Client_Id">
                                         {% for n in client_details %}
                                         <option value ="{{ n.Client_Id }}" name ="Client_Id">{{ n.Client_Id}} </option>
@@ -48,7 +48,7 @@
                         <div class="form-group clearfix">&nbsp;
                              <div class="col-md-12 col-md-6">
                                  <div  class="table-responsive">
-                        <table class="table table-responsive">
+                        <table class="table table-responsive{-sm|-md|-lg|-xl|-xxl} table-striped table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th class="col-1 col-form-label">
@@ -61,6 +61,10 @@
                                         <label class="form-label">TASK</label></th>
                                     <th class="col-1 col-form-label">
                                         <label class="form-label">HOURS</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label"></label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label"></label></th>
 <!--                                    <th class="col-1 col-form-label">TOTAL HOURS/DAY</th>-->
                                 </tr>
                             </thead>
@@ -72,8 +76,8 @@
                                     <td>{{ n.Client_Name }}</td>
                                     <td>{{ n.Task_Name }}</td>
                                     <td>{{ n.HOURS }}</td>
-                                    <td><a class="nav-link" href="/update/{{n.id}}"><H6>Edit</H6> </a></td>
-                                    <td><a class="nav-link" href="/delete/{{n.id}}"><H6>Delete</H6> </a></td>
+                                    <td><a  href="/update/{{n.id}}"><H6>Edit</H6> </a></td>
+                                    <td><a  href="/delete/{{n.id}}"><H6>Delete</H6> </a></td>
                                 </tr>{% endfor %}
                             </tbody>
                         </table>

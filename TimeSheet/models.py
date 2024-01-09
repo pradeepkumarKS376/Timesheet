@@ -43,7 +43,6 @@ class Empattendancemodule(models.Model):
     Client_Id = models.CharField(max_length=254, default=None, null=False)
     Task_Name = models.CharField(max_length=254, default=None, null=False)
     HOURS = models.CharField(max_length=254, default=None, null=False)
-    # TOTALHOURS = models.CharField(max_length=254, default=None, null=False)
 
     class Meta:
         db_table = "Empattendance"

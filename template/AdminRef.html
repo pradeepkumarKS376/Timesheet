@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+                <div class="block-left">
+                    <form action="{% url 'Adminref' %}" method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                        <table class="table table-responsive{-sm|-md|-lg|-xl|-xxl}"  id = "mytable">
+                            <thead>
+                                <tr>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">Employee NO.</label></th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <td><select class="custom-select form-control form-select" name ="Emp_id">
+                                        {% for n in Adminref %}
+                                        <option value ="{{ n.Emp_id_id }}" name ="Employee_ID">{{ n.Emp_id_id}} </option>
+                                        {% endfor %} </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <div class="form-group clearfix">&nbsp;
+                             <div class="col-md-12 col-md-6">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                             </div>
+                        </div>
+                        <div class="form-group clearfix">&nbsp;
+                             <div class="col-md-12 col-md-6">
+                                 <div  class="table-responsive">
+                        <table class="table table-responsive{-sm|-md|-lg|-xl|-xxl} table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">DATE</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">CLIENT NO.</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">CLIENT NAME</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">TASK</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label">HOURS</label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label"></label></th>
+                                    <th class="col-1 col-form-label">
+                                        <label class="form-label"></label></th>
+<!--                                    <th class="col-1 col-form-label">TOTAL HOURS/DAY</th>-->
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                            {% for n in Empattendancdetails %}
+                                <tr>
+                                    <td>{{ n.DATE }}</td>
+                                    <td>{{ n.Client_Id }}</td>
+                                    <td>{{ n.Client_Name }}</td>
+                                    <td>{{ n.Task_Name }}</td>
+                                    <td>{{ n.HOURS }}</td>
+                                    <td><a  href="/update/{{n.id}}"><H6>Edit</H6> </a></td>
+                                    <td><a  href="/delete/{{n.id}}"><H6>Delete</H6> </a></td>
+                                </tr>{% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+                             </div>
+                        </div>
+                    </form>
+                </div>
+
+{% endblock %}

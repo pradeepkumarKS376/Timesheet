@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+
                 <div class="block-left">
                     <form action="{% url 'inserttimesheet' %}" method="post">
                         {% csrf_token %}
@@ -17,26 +18,27 @@
                                         <label class="form-label">TASK</label></th>
                                     <th class="col-1 col-form-label">
                                         <label for="validationTooltip01" class="form-label">HOURS</label></th>
-                                <!--<th class="col-1 col-form-label">TOTAL HOURS/DAY</th>-->
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider">
                                 <tr>
-                                    <td><input name="DATE" type='date' class="form-control"  id="validationTooltip02"required /></td>
-                                    <td><select class="custom-select form-control form-select" name ="Client_Id">
+                                    <td><input name="DATE" type='date' class="form-control"  id="validationTooltip02" required /></td>
+                                    <td><select class="custom-select form-control form-select" id="Client_Id" name ="Client_Id">
                                         {% for n in client_details %}
-                                        <option value ="{{ n.Client_Id }}" name ="Client_Id">{{ n.Client_Id}} </option>
+                                        <option value ="{{ n.Client_Id }}">{{ n.Client_Id}} </option>
                                         {% endfor %} </select></td>
-                                    <td><select class="custom-select form-control form-select"  name ="Client_Name">
+                                    <td><select class="custom-select form-control form-select" id="Client_Name" name ="Client_Name">
                                         {% for n in client_details %}
-                                        <option value ="{{ n.Client_Name }}" name ="Client_Name">{{ n.Client_Name }} </option>
+                                        <option value ="{{ n.Client_Name }}">{{ n.Client_Name }} </option>
                                         {% endfor %}</select></td>
                                     <td><select class="custom-select form-control form-select"  name ="Task_Name">
-                                        {% for n in client_details %}
-                                        <option value ="{{ n.Task_Name }}" name ="Task_Name">{{ n.Task_Name }} </option>
-                                        {% endfor %}</select></td>
-                                    <td><input name="HOURS" class="form-control"  type="text" id="validationTooltip01"required></td>
-                                </tr>
+                                        <option value="Billable">Billable</option>
+                                        <option value="NON -Billable">Admin</option>
+                                        <option value="Holiday">Holiday</option>
+                                        <option value="Leave">Leave</option>
+                                    </select></td>
+                                    <td><input name="HOURS" class="form-control"  type="text" id="validationTooltip01" required></td>
+                                    </tr>
                             </tbody>
                         </table>
                         </div>
@@ -45,6 +47,7 @@
                                     <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
                              </div>
                         </div>
+                        {% if Total_Hours != 0 %}
                         <div class="form-group clearfix">&nbsp;
                              <div class="col-md-12 col-md-6">
                                  <div  class="table-responsive">
@@ -84,7 +87,13 @@
                         </div>
                              </div>
                         </div>
+                    {% endif %}
                     </form>
                 </div>
-
+<script>
+    var $select1 = $("#select1"),
+    var $select2 = $("#select2"),
+    $options = $select2.find("option");
+    $select1.on("change", function () {$select2.html($options.filter('[value="' + this.value + '"]'));}).trigger("change");
+</script>
 {% endblock %}

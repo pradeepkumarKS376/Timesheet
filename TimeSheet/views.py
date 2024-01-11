@@ -3,7 +3,7 @@ from django.contrib.auth import logout
 from django.shortcuts import render
 from .Forms import *
 from django.db.models import Sum
-
+from django.db.models import Count
 
 def login_view(request):
     if request.method == 'POST':
@@ -17,7 +17,8 @@ def login_view(request):
             Admin_Id = Admin_Ids(Emp_id)
             Totalhrs = Totalhr(Emp_id)
             Empattendancdetails = Sort_week(Emp_id)
-            response = render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id})
+            daysum = daylisummary(Emp_id)
+            response = render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id, "daysum": daysum})
             return response
         else:
             return render(request, 'login-2.html', {'error_message': 'Incorrect username and / or password.'})
@@ -30,6 +31,7 @@ def inserttimesheet_view(request):
     client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
     Totalhrs = Totalhr(Emp_id)
     Empattendancdetails = Sort_week(Emp_id)
+    daysum = daylisummary(Emp_id)
     Admin_Id = Admin_Ids(Emp_id)
     if request.method == 'POST':
         DATE = request.POST['DATE']
@@ -41,9 +43,10 @@ def inserttimesheet_view(request):
         a.save()
         Totalhrs = Totalhr(Emp_id)
         Admin_Id = Admin_Ids(Emp_id)
-        return render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id": Admin_Id})
+        daysum = daylisummary(Emp_id)
+        return render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id": Admin_Id, "daysum": daysum})
     else:
-        return render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id": Admin_Id})
+        return render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id": Admin_Id, "daysum": daysum})
 
 
 def edit_view(request, id):
@@ -59,6 +62,7 @@ def edit_view(request, id):
             client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
             Empattendancdetail = Sort_week(Emp_id)
             Admin_Id = Admin_Ids(Emp_id)
+            daysum = daylisummary(Emp_id)
             if (Admin_Id==Emp_id and Emp_id !=Emp_id):
                 Adminref = Baseclientmodule.objects.all().values_list('Emp_id', flat=True).distinct().filter(
                     Admin_Id=Emp_id).order_by('Emp_id')
@@ -66,7 +70,7 @@ def edit_view(request, id):
                               {"client_details": client_details, "Empattendancdetails": Empattendancdetail,
                                "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id": Admin_Id, "Adminref": Adminref})
             else:
-                return render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id})
+                return render(request, "index.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id,"daysum": daysum})
     return render(request, "Update.html",
                   {"Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id})
 
@@ -79,6 +83,7 @@ def del_view(request, id):
     client_details = Baseclientmodule.objects.all().filter(Emp_id=Emp_id)
     Empattendancdetail = Sort_week(Emp_id)
     Admin_Id = Admin_Ids(Emp_id)
+    daysum = daylisummary(Emp_id)
     if (Admin_Id==Emp_id and Emp_id !=Emp_id):
         Adminref = Baseclientmodule.objects.all().values_list('Emp_id', flat=True).distinct().filter(
             Admin_Id=Emp_id).order_by('Emp_id')
@@ -86,7 +91,7 @@ def del_view(request, id):
                       {"client_details": client_details, "Empattendancdetails": Empattendancdetail,
                        "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id": Admin_Id, "Adminref": Adminref})
     return render(request, "index.html",
-                  {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id})
+                  {"client_details": client_details, "Empattendancdetails": Empattendancdetail, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Admin_Id":Admin_Id,"daysum": daysum})
 
 
 def logout_view(request):
@@ -152,3 +157,13 @@ def AdminRef_view(request):
     else:
         return render(request, "AdminRef.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Emp_id, "Total_Hours": Totalhrs, "Adminref": Adminref, "Admin_Id": Admin_Id})
 
+
+def daylisummary(Emp_id):
+    result = (Empattendancemodule.objects
+              .filter(Employee_id=Emp_id)
+              .values('DATE')
+              .annotate(DATES=Sum('HOURS'))
+              .order_by()
+              )
+    print(result)
+    return result

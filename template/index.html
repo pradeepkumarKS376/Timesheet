@@ -51,9 +51,9 @@
                         <div class="form-group clearfix">&nbsp;
                              <div class="col-md-12 col-md-6">
                                  <div  class="table-responsive">
-                        <table class="table table-responsive{-sm|-md|-lg|-xl|-xxl} table-striped table-hover table-bordered">
+                        <table class="table table-responsive{-sm|-md|-lg|-xl|-xxl} table-striped table-hover ">
                             <thead>
-                                <tr>
+                                <tr data-bs-toggle="collapse" href="#collapseExample">
                                     <th class="col-1 col-form-label">
                                         <label class="form-label">DATE</label></th>
                                     <th class="col-1 col-form-label">
@@ -73,7 +73,7 @@
                             </thead>
                             <tbody class="table-group-divider">
                             {% for n in Empattendancdetails %}
-                                <tr>
+                                <tr class="collapse" id="collapseExample">
                                     <td>{{ n.DATE }}</td>
                                     <td>{{ n.Client_Id }}</td>
                                     <td>{{ n.Client_Name }}</td>
@@ -84,16 +84,41 @@
                                 </tr>{% endfor %}
                             </tbody>
                         </table>
-                        </div>
+                                 </div>
                              </div>
                         </div>
-                    {% endif %}
+                        {% endif %}
+                        <div class="form-group clearfix">
+                            <p>
+                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+                                    Day Summary
+                                </button>
+                            </p>
+                            <div style="min-height: 120px;">
+                            <div class="collapse collapse-horizontal" id="collapseWidthExample">
+                            <div class="card card-body" >
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Monday</th>
+                                                    <th scope="col">Tuesday</th>
+                                                    <th scope="col">Wednesday</th>
+                                                    <th scope="col">Thursday</th>
+                                                    <th scope="col">Friday</th>
+                                                    <th scope="col">Saturday</th>
+                                                    <th scope="col">Sunday</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>{% for n in daysum %}
+                                                <td>{{ n.DATES }}</td>{% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                            </div>
+                            </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
-<script>
-    var $select1 = $("#select1"),
-    var $select2 = $("#select2"),
-    $options = $select2.find("option");
-    $select1.on("change", function () {$select2.html($options.filter('[value="' + this.value + '"]'));}).trigger("change");
-</script>
 {% endblock %}

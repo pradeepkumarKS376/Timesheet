@@ -3,7 +3,7 @@ from django.contrib.auth import logout
 from django.shortcuts import render
 from .Forms import *
 from django.db.models import Sum
-from django.db.models import Count
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -150,7 +150,7 @@ def AdminRef_view(request):
     if request.method == 'POST':
         Employee_ID = request.session['Employee_ID']
         Emp_id = request.POST['Emp_id']
-        Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id)
+        Empattendancdetails = Empattendancemodule.objects.all().filter(Employee_id=Emp_id).order_by('-DATE')
         Totalhrs = Totalhr(Emp_id)
         Admin_Id = Admin_Ids(Emp_id)
         return render(request, "AdminRef.html", {"client_details": client_details, "Empattendancdetails": Empattendancdetails, "Emp_id": Employee_ID, "Total_Hours": Totalhrs, "Adminref": Adminref, "Admin_Id": Admin_Id})
@@ -159,11 +159,14 @@ def AdminRef_view(request):
 
 
 def daylisummary(Emp_id):
+    a = Filter_Date()
+    week_start = a[0]
+    week_end = a[1]
     result = (Empattendancemodule.objects
               .filter(Employee_id=Emp_id)
+              .filter(Employee_id=Emp_id).filter(DATE__gte=week_start,DATE__lte=week_end)
               .values('DATE')
               .annotate(DATES=Sum('HOURS'))
-              .order_by()
+              .order_by('DATE')
               )
-    print(result)
     return result
